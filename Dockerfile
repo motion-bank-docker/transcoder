@@ -3,7 +3,7 @@ MAINTAINER Motion Bank
 
 # Install NodeJS 9
 
-RUN apt-get update && apt-get install -y curl
+RUN apt-get update && apt-get install -y curl build-essential
 RUN curl -sL https://deb.nodesource.com/setup_9.x | bash -
 RUN apt-get install -y nodejs
 RUN npm i -g npm
