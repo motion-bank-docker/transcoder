@@ -1,0 +1,22 @@
+{
+  "resources": {
+    "mongodb": {
+      "url": "MONGODB_RESOURCES_URL",
+      "dbName": "MONGODB_RESOURCES_DBNAME"
+    }
+  },
+  "acl": {
+    "mongodb": {
+      "url": "MONGODB_ACL_URL",
+      "dbName": "MONGODB_ACL_DBNAME"
+    }
+  },
+  "metadata": {
+    "memcachedURL": "MEMCACHED_URL",
+    "lifetime": "METADATA_CACHE_LIFETIME"
+  },
+  "apiKeys": {
+    "youtube": "YOUTUBE_API_KEY",
+    "vimeo": "VIMEO_ACCESS_TOKEN"
+  }
+}

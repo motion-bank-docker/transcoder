@@ -1,0 +1,43 @@
+{
+  "api": {
+    "apiHost": "http://localhost:4040"
+  },
+  "http": {
+    "host": "localhost",
+    "port": 4040
+  },
+  "resources": {
+    "mongodb": {
+      "url": "mongodb://localhost:27017/motionbank-api-dev",
+      "dbName": "motionbank-api-dev"
+    }
+  },
+  "acl": {
+    "mongodb": {
+      "url": "mongodb://localhost:27017",
+      "dbName": "motionbank-api-acl-dev"
+    }
+  },
+  "metadata": {
+    "memcachedURL": null,
+    "lifetime": 86400
+  },
+  "auth": {
+    "jwks": {
+      "cache": true,
+      "rateLimit": true,
+      "jwksRequestsPerMinute": 5,
+      "jwksUri": "https://motionbank.eu.auth0.com/.well-known/jwks.json"
+    },
+    "jwt": {
+      "audience": "http://localhost:4040",
+      "issuer": "https://motionbank.eu.auth0.com/",
+      "algorithms": ["RS256"],
+      "credentialsRequired": false
+    }
+  },
+  "apiKeys": {
+    "youtube": null,
+    "vimeo": null
+  }
+}

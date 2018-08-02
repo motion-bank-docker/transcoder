@@ -1,0 +1,41 @@
+{
+  "name": "transcoder",
+  "version": "0.0.1",
+  "description": "Media transcoding API",
+  "main": "src/index.js",
+  "scripts": {
+    "lint": "eslint src/. --config .eslintrc.js",
+    "metapak": "metapak",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://gitlab.rlp.net/motionbank/transcoder.git"
+  },
+  "bugs": {
+    "url": "https://gitlab.rlp.net/motionbank/transcoder/issues"
+  },
+  "homepage": "https://gitlab.rlp.net/motionbank/transcoder#readme",
+  "author": "Mainz University of Applied Sciences (Motion Bank Project)",
+  "license": "MIT",
+  "metapak": {
+    "configs": [
+      "readme",
+      "eslint"
+    ]
+  },
+  "devDependencies": {
+    "eslint": "^4.13.1",
+    "eslint-config-standard": "^10.2.1",
+    "eslint-plugin-import": "^2.11.0",
+    "eslint-plugin-node": "^5.2.1",
+    "eslint-plugin-promise": "^3.6.0",
+    "eslint-plugin-standard": "^3.1.0",
+    "metapak": "^1.0.3",
+    "metapak-motionbank": "^1.12.0"
+  },
+  "dependencies": {
+    "mbjs-data-models": "0.0.8",
+    "mbjs-generic-api": "0.0.5"
+  }
+}
