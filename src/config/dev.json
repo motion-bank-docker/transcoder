@@ -1,5 +1,6 @@
 {
   "api": {
+    "uriBase": "https://app.motionbank.org",
     "apiHost": "http://localhost:4040"
   },
   "http": {
@@ -30,7 +31,7 @@
       "jwksUri": "https://motionbank.eu.auth0.com/.well-known/jwks.json"
     },
     "jwt": {
-      "audience": "http://localhost:4040",
+      "audience": "http://localhost:3030",
       "issuer": "https://motionbank.eu.auth0.com/",
       "algorithms": ["RS256"],
       "credentialsRequired": false

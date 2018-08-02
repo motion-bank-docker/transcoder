@@ -1,10 +1,11 @@
 {
   "api": {
+    "uriBase": "https://app.motionbank.org",
     "apiHost": "https://transcoder.motionbank.org"
   },
   "http": {
     "host": "0.0.0.0",
-    "port": 3030
+    "port": 4040
   },
   "resources": {
     "mongodb": {
