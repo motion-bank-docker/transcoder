@@ -19,6 +19,10 @@
       "dbName": "motionbank-api-acl-dev"
     }
   },
+  "conversions": {
+    "concurrency": 1,
+    "redisURL": "redis://localhost:6379"
+  },
   "metadata": {
     "memcachedURL": null,
     "lifetime": 86400

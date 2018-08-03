@@ -21,6 +21,13 @@ const setup = async function () {
     Metadata = require('./lib/metadata'),
     metadata = new Metadata(api._app, annotations)
 
+  /**
+   * Configure conversion
+   */
+  const
+    Conversions = require('./lib/conversions'),
+    conversions = new Conversions(api._app)
+
   await api.start()
 }
 

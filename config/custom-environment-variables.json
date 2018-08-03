@@ -11,6 +11,10 @@
       "dbName": "MONGODB_ACL_DBNAME"
     }
   },
+  "conversions": {
+    "concurrency": "CONVERSIONS_CONCURRENCY",
+    "redisURL": "REDIS_URL"
+  },
   "metadata": {
     "memcachedURL": "MEMCACHED_URL",
     "lifetime": "METADATA_CACHE_LIFETIME"

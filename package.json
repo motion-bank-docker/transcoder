@@ -35,6 +35,9 @@
     "metapak-motionbank": "^1.12.0"
   },
   "dependencies": {
+    "bull": "^3.4.4",
+    "fs-extra": "^7.0.0",
+    "luxon": "^1.3.3",
     "mbjs-data-models": "0.0.8",
     "mbjs-generic-api": "0.0.5",
     "mbjs-media": "0.0.14",
