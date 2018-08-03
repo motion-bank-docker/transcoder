@@ -37,7 +37,7 @@
   "dependencies": {
     "mbjs-data-models": "0.0.8",
     "mbjs-generic-api": "0.0.5",
-    "mbjs-media": "0.0.13",
+    "mbjs-media": "0.0.14",
     "mbjs-persistence": "^0.2.0",
     "mbjs-utils": "0.0.5",
     "memcached": "^2.2.2",
