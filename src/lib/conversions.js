@@ -1,7 +1,7 @@
 const
   config = require('config'),
   send = require('@polka/send-type'),
-  os = require('os'),
+  path = require('path'),
   TinyEmitter = require('tiny-emitter'),
   Queue = require('bull'),
   { DateTime } = require('luxon'),
@@ -14,7 +14,7 @@ class Metadata extends TinyEmitter {
     const _this = this
 
     this._queue = new Queue('conversions', config.conversions.redisURL)
-    this._queue.process(parseInt(config.conversions.concurrency), require('./workers/convert'))
+    this._queue.process(parseInt(config.conversions.concurrency), path.join(__dirname, 'workers', 'convert.js'))
 
     app.post('/conversions', async (req, res) => {
       const jobId = ObjectUtil.uuid4()
