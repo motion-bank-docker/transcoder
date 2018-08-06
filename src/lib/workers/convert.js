@@ -2,10 +2,12 @@ const
   fs = require('fs-extra'),
   os = require('os'),
   path = require('path'),
+  config = require('config'),
   { DateTime, Interval } = require('luxon'),
   ffmpegScale = require('mbjs-media/src/util/ffmpeg-scale'),
   ffmpegThumb = require('mbjs-media/src/util/ffmpeg-thumb'),
   ffmpeg = require('mbjs-media/src/util/ffmpeg'),
+  Minio = require('minio'),
   { Assert, ObjectUtil } = require('mbjs-utils')
 
 const convertJob = async function (job) {
@@ -14,7 +16,8 @@ const convertJob = async function (job) {
   const start = DateTime.local()
   const uuid = ObjectUtil.uuid4()
   const tmpDir = path.join(os.tmpdir(), uuid)
-  const destination = path.join(tmpDir, `${uuid}.${job.data.format || 'mp4'}`)
+  const destFile = `${uuid}.${job.data.format || 'mp4'}`
+  const destination = path.join(tmpDir, destFile)
   const baseName = path.basename(destination, path.extname(destination))
 
   if (job.data.source.indexOf('http') !== 0) {
@@ -33,17 +36,28 @@ const convertJob = async function (job) {
     console.error(e.message)
   }
   await ffmpegThumb(destination, tmpDir, 1)
+  const thumbFile = `${baseName}.png`
+  const thumbPath = path.join(path.dirname(destination), thumbFile)
   await fs.move(
     path.join(tmpDir, 'tn.png'),
-    path.join(path.dirname(destination), `${baseName}.png`),
+    thumbPath,
     { overwrite: true }
   )
-  // await fs.remove(tmpDir)
-  const end = DateTime.local()
-  const interval = Interval.fromDateTimes(start, end).toDuration().as('seconds')
-  console.log(`conversion took ${interval} seconds`)
-  job.data.duration = interval
-  return job.data
+
+  const minioClient = new Minio.Client(config.assets.client)
+  await minioClient.fPutObject(config.assets.bucket, destFile, destination, { 'Content-Type': 'video/mp4' })
+  await minioClient.fPutObject(config.assets.bucket, thumbFile, thumbPath, { 'Content-Type': 'image/png' })
+
+  await fs.remove(tmpDir)
+
+  let assetHost = `${config.assets.client.secure ? 'https://' : 'http://'}${config.assets.client.endPoint}`
+  if (config.assets.client.port !== 80 || config.assets.client.port !== 443) assetHost += `:${config.assets.client.port}`
+  assetHost += `/${config.assets.bucket}`
+
+  return {
+    video: `${assetHost}/${destFile}`,
+    preview: `${assetHost}/${thumbFile}`
+  }
 }
 
 module.exports = function (job) {

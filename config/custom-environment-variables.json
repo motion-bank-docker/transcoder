@@ -1,4 +1,14 @@
 {
+  "assets": {
+    "client": {
+      "endPoint": "ASSETS_ENDPOINT",
+      "port": "ASSETS_PORT",
+      "secure": "ASSETS_SECURE",
+      "accessKey": "ASSETS_ACCESS_KEY",
+      "secretKey": "ASSETS_SECRET_KEY"
+    },
+    "bucket": "ASSETS_BUCKET"
+  },
   "resources": {
     "mongodb": {
       "url": "MONGODB_RESOURCES_URL",
