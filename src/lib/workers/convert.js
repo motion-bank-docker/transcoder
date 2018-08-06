@@ -3,7 +3,6 @@ const
   os = require('os'),
   path = require('path'),
   config = require('config'),
-  { DateTime, Interval } = require('luxon'),
   ffmpegScale = require('mbjs-media/src/util/ffmpeg-scale'),
   ffmpegThumb = require('mbjs-media/src/util/ffmpeg-thumb'),
   ffmpeg = require('mbjs-media/src/util/ffmpeg'),
@@ -13,7 +12,6 @@ const
 const convertJob = async function (job) {
   Assert.isType(job.data.source, 'string', 'invalid source')
 
-  const start = DateTime.local()
   const uuid = ObjectUtil.uuid4()
   const tmpDir = path.join(os.tmpdir(), uuid)
   const destFile = `${uuid}.${job.data.format || 'mp4'}`
@@ -51,7 +49,7 @@ const convertJob = async function (job) {
   await fs.remove(tmpDir)
 
   let assetHost = `${config.assets.client.secure ? 'https://' : 'http://'}${config.assets.client.endPoint}`
-  if (config.assets.client.port !== 80 || config.assets.client.port !== 443) assetHost += `:${config.assets.client.port}`
+  if (config.assets.client.port !== 80 && config.assets.client.port !== 443) assetHost += `:${config.assets.client.port}`
   assetHost += `/${config.assets.bucket}`
 
   return {

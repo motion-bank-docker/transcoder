@@ -16,8 +16,6 @@ class Metadata extends TinyEmitter {
     this._queue = new Queue('conversions', config.conversions.redisURL)
     this._queue.process(parseInt(config.conversions.concurrency), require('./workers/convert'))
 
-    console.log(os.tmpdir())
-
     app.post('/conversions', async (req, res) => {
       const jobId = ObjectUtil.uuid4()
       req.body.uuid = ObjectUtil.uuid4()

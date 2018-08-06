@@ -22,6 +22,13 @@ const setup = async function () {
     metadata = new Metadata(api._app, annotations)
 
   /**
+   * Configure upload
+   */
+  const
+    Uploads = require('./lib/uploads'),
+    uploads = new Uploads(api._app)
+
+  /**
    * Configure conversion
    */
   const
