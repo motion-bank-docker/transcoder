@@ -4,7 +4,7 @@ const
   TinyEmitter = require('tiny-emitter'),
   Memcached = require('memcached'),
   { ObjectUtil } = require('mbjs-utils'),
-  { getMetaData } = require('mbjs-media/src/util/metadata')
+  getMetaData = require('mbjs-media/src/util/get-metadata')
 
 const fetchMetaData = async (annotation, user, annotationsService) => {
   let meta
