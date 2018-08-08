@@ -2,6 +2,7 @@ const
   fs = require('fs-extra'),
   os = require('os'),
   path = require('path'),
+  URL = require('url'),
   config = require('config'),
   ffmpegScale = require('mbjs-media/src/util/ffmpeg-scale'),
   ffmpegThumb = require('mbjs-media/src/util/ffmpeg-thumb'),
@@ -14,9 +15,13 @@ const convertJob = async function (job) {
 
   const uuid = ObjectUtil.uuid4()
   const tmpDir = path.join(os.tmpdir(), uuid)
-  const destFile = `${uuid}.${job.data.format || 'mp4'}`
+  const destFile = `${uuid}.mp4`
   const destination = path.join(tmpDir, destFile)
   const baseName = path.basename(destination, path.extname(destination))
+  const sourceName = URL.parse(job.data.source).pathname
+  const metadata = Object.assign({
+    title: path.basename(sourceName, path.extname(sourceName))
+  }, job.data.metadata)
 
   if (job.data.source.indexOf('http') !== 0) {
     const stats = await fs.stat(job.data.source)
@@ -25,12 +30,12 @@ const convertJob = async function (job) {
   await fs.ensureDir(tmpDir)
   try {
     if (job.data.scale) {
-      await ffmpegScale(job.data.source, destination, job.data.scale.width, job.data.scale.height, progress => {
+      await ffmpegScale(job.data.source, destination, job.data.scale, metadata, progress => {
         job.progress(progress.percent * 0.4)
       })
     }
     else {
-      await ffmpeg(job.data.source, destination, progress => {
+      await ffmpeg(job.data.source, destination, job.data.metadata, progress => {
         job.progress(progress.percent * 0.4)
       })
     }
