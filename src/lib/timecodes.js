@@ -1,0 +1,59 @@
+const
+  config = require('config'),
+  send = require('@polka/send-type'),
+  TinyEmitter = require('tiny-emitter'),
+  Queue = require('bull'),
+  path = require('path'),
+  { DateTime } = require('luxon'),
+  { ObjectUtil } = require('mbjs-utils')
+
+class Timecodes extends TinyEmitter {
+  constructor (app) {
+    super()
+
+    this._queue = new Queue('timecode', config.timecode.redisURL)
+    this._queue.process(parseInt(config.timecode.concurrency), path.join(__dirname, 'workers', 'extract-ltc.js'))
+
+    const _this = this
+
+    app.post('/timecodes', async (req, res) => {
+      const jobId = ObjectUtil.uuid4()
+      req.body.uuid = ObjectUtil.uuid4()
+      _this._queue.add(req.body, { jobId })
+      _this._response(req, res, { jobId })
+    })
+
+    app.get('/timecodes/:id', async (req, res) => {
+      const job = await _this._queue.getJob(req.params.id)
+      if (!job) return _this._errorResponse(res, 404)
+      const jobInfo = {
+        uuid: job.id,
+        source: job.data.source,
+        result: job.returnvalue,
+        failed: typeof job.failedReason !== 'undefined',
+        attempts: job.attemptsMade,
+        progress: job.progress,
+        delay: job.delay,
+        created: DateTime.fromMillis(job.timestamp).toISO(),
+        processed: job.processedOn ? DateTime.fromMillis(job.processedOn).toISO() : undefined,
+        finished: job.finishedOn ? DateTime.fromMillis(job.finishedOn).toISO() : undefined
+      }
+      _this._response(req, res, jobInfo)
+    })
+  }
+
+  _response (req, res, data = {}) {
+    this.emit('message', { method: req.method, id: data.uuid })
+    if (typeof res === 'function') res({ data })
+    else if (typeof res === 'undefined') return Promise.resolve({ data })
+    else send(res, 200, data)
+  }
+
+  _errorResponse (res, code, message = undefined) {
+    if (typeof res === 'function') res({ error: true, code })
+    else if (typeof res === 'undefined') return Promise.resolve({ error: true, code })
+    else send(res, code, message)
+  }
+}
+
+module.exports = Timecodes

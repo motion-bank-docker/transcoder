@@ -23,6 +23,10 @@
     "concurrency": 1,
     "redisURL": "redis://localhost:6379"
   },
+  "timecode": {
+    "concurrency": 1,
+    "redisURL": "redis://localhost:6379"
+  },
   "metadata": {
     "memcachedURL": null,
     "lifetime": 86400

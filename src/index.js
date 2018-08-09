@@ -35,6 +35,13 @@ const setup = async function () {
     Conversions = require('./lib/conversions'),
     conversions = new Conversions(api._app)
 
+  /**
+   * Configure timecode
+   */
+  const
+    Timecodes = require('./lib/timecodes'),
+    timecodes = new Timecodes(api._app)
+
   await api.start()
 }
 
