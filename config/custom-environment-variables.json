@@ -25,6 +25,10 @@
     "concurrency": "CONVERSIONS_CONCURRENCY",
     "redisURL": "REDIS_URL"
   },
+  "sequences": {
+    "concurrency": "SEQUENCES_CONCURRENCY",
+    "redisURL": "REDIS_URL"
+  },
   "timecode": {
     "concurrency": "TIMECODES_CONCURRENCY",
     "redisURL": "REDIS_URL"

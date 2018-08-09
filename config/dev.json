@@ -23,6 +23,10 @@
     "concurrency": 1,
     "redisURL": "redis://localhost:6379"
   },
+  "sequences": {
+    "concurrency": 1,
+    "redisURL": "redis://localhost:6379"
+  },
   "timecode": {
     "concurrency": 1,
     "redisURL": "redis://localhost:6379"

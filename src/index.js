@@ -14,6 +14,9 @@ const setup = async function () {
   const annotations = new Service('annotations', api._app, models.Annotation, api._logger, api._acl)
   // annotations.on('message', message => api._sockets.write(message))
 
+  const maps = new Service('maps', api._app, models.Map, api._logger, api._acl)
+  // annotations.on('message', message => api._sockets.write(message))
+
   /**
    * Configure metadata
    */
@@ -34,6 +37,13 @@ const setup = async function () {
   const
     Conversions = require('./lib/conversions'),
     conversions = new Conversions(api._app)
+
+  /**
+   * Configure sequences
+   */
+  const
+    Sequences = require('./lib/sequences'),
+    sequences = new Sequences(api._app, annotations, maps)
 
   /**
    * Configure timecode

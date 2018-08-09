@@ -2,9 +2,9 @@ const
   fs = require('fs-extra'),
   os = require('os'),
   path = require('path'),
-  URL = require('url'),
   config = require('config'),
-  ffmpegScale = require('mbjs-media/src/util/ffmpeg-join'),
+  ffmpegJoin = require('mbjs-media/src/util/ffmpeg-join'),
+  ffmpegThumb = require('mbjs-media/src/util/ffmpeg-thumb'),
   Minio = require('minio'),
   { Assert, ObjectUtil } = require('mbjs-utils')
 
@@ -16,27 +16,15 @@ const concatJob = async function (job) {
   const destFile = `${uuid}.mp4`
   const destination = path.join(tmpDir, destFile)
   const baseName = path.basename(destination, path.extname(destination))
-  const sourceName = URL.parse(job.data.source).pathname
   const metadata = Object.assign({
-    title: path.basename(sourceName, path.extname(sourceName))
+    title: job.data.map.title
   }, job.data.metadata)
 
-  if (job.data.source.indexOf('http') !== 0) {
-    const stats = await fs.stat(job.data.source)
-    Assert.ok(stats.isFile() === true, 'invalid source')
-  }
   await fs.ensureDir(tmpDir)
   try {
-    if (job.data.scale) {
-      await ffmpegScale(job.data.source, destination, job.data.scale, metadata, progress => {
-        job.progress(progress.percent * 0.4)
-      })
-    }
-    else {
-      await ffmpeg(job.data.source, destination, job.data.metadata, progress => {
-        job.progress(progress.percent * 0.4)
-      })
-    }
+    await ffmpegJoin(job.data.sources.map(source => { return source.body.source.id }), destination, os.tmpdir(), metadata, progress => {
+      job.progress(progress.percent * 0.4)
+    })
   } catch (e) {
     console.error(e.message)
   }
