@@ -15,9 +15,15 @@ RUN apt-get update && apt-get install -y ffmpeg graphicsmagick
 RUN which ffmpeg && which ffprobe && which gm
 RUN ffmpeg -version && ffprobe -version
 
+# Install LTC tools
+
+RUN apt-get update && apt-get install -y git pkg-config libjack-dev libsndfile-dev libltc11 libltc-dev
+RUN git clone https://github.com/x42/ltc-tools.git
+RUN cd ltc-tools && make all && make install && cd .. && rm -r ltc-tools
+
 # Cleanup
 
-RUN apt-get remove -y software-properties-common curl && apt-get autoremove -y && apt-get clean
+RUN apt-get remove -y software-properties-common curl git pkg-config && apt-get autoremove -y && apt-get clean
 
 # Setup app
 
