@@ -35,7 +35,7 @@ const convertJob = async function (job) {
       })
     }
     else {
-      await ffmpeg(job.data.source, destination, job.data.metadata, progress => {
+      await ffmpeg(job.data.source, destination, metadata, progress => {
         job.progress(progress.percent * 0.4)
       })
     }
