@@ -32,6 +32,13 @@ const setup = async function () {
     uploads = new Uploads(api._app)
 
   /**
+   * Configure download
+   */
+  const
+    Downloads = require('./lib/downloads'),
+    downloads = new Downloads(api._app)
+
+  /**
    * Configure conversion
    */
   const

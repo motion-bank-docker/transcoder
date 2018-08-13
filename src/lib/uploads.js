@@ -8,7 +8,7 @@ const
   Minio = require('minio'),
   TinyEmitter = require('tiny-emitter')
 
-class Metadata extends TinyEmitter {
+class Uploads extends TinyEmitter {
   constructor (app) {
     super()
 
@@ -48,4 +48,4 @@ class Metadata extends TinyEmitter {
   }
 }
 
-module.exports = Metadata
+module.exports = Uploads
