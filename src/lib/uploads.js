@@ -32,6 +32,14 @@ class Uploads extends TinyEmitter {
         })
       })
     })
+
+    app.delete('/uploads/:file', async (req, res) => {
+      upload.single('file')(req, res, async () => {
+        const minioClient = new Minio.Client(config.assets.client)
+        await minioClient.removeObject(config.assets.bucket, filename, req.params.file)
+        _this._response(req, res)
+      })
+    })
   }
 
   _response (req, res, data = {}) {
