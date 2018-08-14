@@ -28,22 +28,34 @@ const convertJob = async function (job) {
     Assert.ok(stats.isFile() === true, 'invalid source')
   }
   await fs.ensureDir(tmpDir)
+  let source = job.data.source
+  if (job.data.rotate) {
+    try {
+      const tmpdst = destination.replace(/\.mp4$/, '-rotated.mp4')
+      await ffmpeg(source, tmpdst, metadata, progress => {
+        job.progress(progress.percent * 0.3)
+      })
+      source = tmpdst
+    } catch (e) {
+      console.error(e.message)
+    }
+  }
   try {
     if (job.data.scale) {
-      await ffmpegScale(job.data.source, destination, job.data.scale, metadata, progress => {
-        job.progress(progress.percent * 0.4)
+      await ffmpegScale(source, destination, job.data.scale, metadata, progress => {
+        job.progress(progress.percent * 0.3)
       })
     }
     else {
-      await ffmpeg(job.data.source, destination, metadata, progress => {
-        job.progress(progress.percent * 0.4)
+      await ffmpeg(source, destination, metadata, progress => {
+        job.progress(progress.percent * 0.3)
       })
     }
   } catch (e) {
     console.error(e.message)
   }
   await ffmpegThumb(destination, tmpDir, 1, progress => {
-    job.progress(40 + progress.percent * 0.4)
+    job.progress(60 + progress.percent * 0.3)
   })
   const thumbFile = `${baseName}.png`
   const thumbPath = path.join(path.dirname(destination), thumbFile)
@@ -57,7 +69,7 @@ const convertJob = async function (job) {
   await minioClient.fPutObject(config.assets.bucket, destFile, destination, { 'Content-Type': 'video/mp4' })
   await minioClient.fPutObject(config.assets.bucket, thumbFile, thumbPath, { 'Content-Type': 'image/png' })
 
-  await fs.remove(tmpDir)
+  // await fs.remove(tmpDir)
 
   job.progress(100)
 

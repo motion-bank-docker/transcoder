@@ -33,10 +33,17 @@ class Metadata extends TinyEmitter {
     const _this = this
 
     app.get('/metadata/:id', async (req, res) => {
-      const result = await _this._annotations.getHandler(req)
-      const annotation = result.data
-      const key = `metadata_${ObjectUtil.slug(annotation.body.source.id)}`
-      if (!annotation) return _this._errorResponse(res, 404)
+      let source, annotation
+      if (req.params.id === 'url') {
+        source = req.query.url
+      }
+      else {
+        const result = await _this._annotations.getHandler(req)
+        annotation = result.data
+        source = annotation.body.source.id
+      }
+      const key = `metadata_${ObjectUtil.slug(source)}`
+      if (!annotation && !source) return _this._errorResponse(res, 404)
       let metadata
       if (_this._memcached) {
         metadata = await new Promise((resolve, reject) => {
@@ -47,7 +54,7 @@ class Metadata extends TinyEmitter {
         })
       }
       if (!metadata) {
-        metadata = await fetchMetaData(annotation, req.user, _this._annotations)
+        metadata = await fetchMetaData(annotation || source, req.user, _this._annotations)
         if (_this._memcached && metadata) {
           await new Promise((resolve, reject) => {
             _this._memcached.set(key, metadata, parseInt(config.metadata.lifetime.toString()), err => {
