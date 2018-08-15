@@ -42,8 +42,8 @@ class Metadata extends TinyEmitter {
         annotation = result.data
         source = annotation.body.source.id
       }
-      const key = `metadata_${ObjectUtil.slug(source)}`
       if (!annotation && !source) return _this._errorResponse(res, 404)
+      const key = `metadata_${ObjectUtil.slug(source)}`
       let metadata
       if (_this._memcached) {
         metadata = await new Promise((resolve, reject) => {
