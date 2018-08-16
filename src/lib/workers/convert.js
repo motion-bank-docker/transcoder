@@ -7,6 +7,7 @@ const
   ffmpegScale = require('mbjs-media/src/util/ffmpeg-scale'),
   ffmpegThumb = require('mbjs-media/src/util/ffmpeg-thumb'),
   ffmpeg = require('mbjs-media/src/util/ffmpeg'),
+  image = require('mbjs-media/src/util/image'),
   Minio = require('minio'),
   { Assert, ObjectUtil } = require('mbjs-utils')
 
@@ -54,16 +55,13 @@ const convertJob = async function (job) {
   } catch (e) {
     console.error(e.message)
   }
+
   await ffmpegThumb(destination, tmpDir, 1, progress => {
     job.progress(60 + progress.percent * 0.3)
   })
-  const thumbFile = `${baseName}.png`
-  const thumbPath = path.join(path.dirname(destination), thumbFile)
-  await fs.move(
-    path.join(tmpDir, 'tn.png'),
-    thumbPath,
-    { overwrite: true }
-  )
+  let thumbFile = `${baseName}.jpg`
+  let thumbPath = path.join(path.dirname(destination), thumbFile)
+  await image.convert(path.join(tmpDir, 'tn.png'), thumbPath)
 
   const minioClient = new Minio.Client(config.assets.client)
   await minioClient.fPutObject(config.assets.bucket, destFile, destination, { 'Content-Type': 'video/mp4' })
