@@ -4,6 +4,7 @@ const
   TinyEmitter = require('tiny-emitter'),
   Queue = require('bull'),
   path = require('path'),
+  Minio = require('minio'),
   { DateTime } = require('luxon'),
   { ObjectUtil } = require('mbjs-utils')
 
@@ -14,6 +15,8 @@ class Timecodes extends TinyEmitter {
     this._queue = new Queue('timecode', config.timecode.redisURL)
     this._queue.process(parseInt(config.timecode.concurrency), path.join(__dirname, 'workers', 'extract-ltc.js'))
 
+    this._minio = new Minio.Client(config.assets.client)
+
     const _this = this
 
     app.post('/timecodes', async (req, res) => {
@@ -21,6 +24,21 @@ class Timecodes extends TinyEmitter {
       req.body.uuid = ObjectUtil.uuid4()
       _this._queue.add(req.body, { jobId })
       _this._response(req, res, { jobId })
+    })
+
+    app.get('/timecodes/signals/ltc', async (req, res) => {
+      const files = []
+      const stream = await this._minio.listObjects('ltc', 'LTC')
+      stream.on('data', obj => files.push(obj.name))
+      stream.on('error', err => _this._errorResponse(res, 500, err.message))
+      stream.on('end', () => {
+        let assetHost = `${config.assets.client.secure ? 'https://' : 'http://'}${config.assets.client.endPoint}`
+        if (config.assets.client.port !== 80 && config.assets.client.port !== 443) assetHost += `:${config.assets.client.port}`
+        assetHost += '/ltc'
+        _this._response(req, res, files.map(file => {
+          return `${assetHost}/${file}`
+        }))
+      })
     })
 
     app.get('/timecodes/:id', async (req, res) => {
