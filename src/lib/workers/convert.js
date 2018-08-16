@@ -73,9 +73,9 @@ const convertJob = async function (job) {
 
   const minioClient = new Minio.Client(config.assets.client)
   await minioClient.fPutObject(config.assets.bucket, destFile, destination, { 'Content-Type': 'video/mp4' })
-  await minioClient.fPutObject(config.assets.bucket, thumbFile, thumbPath, { 'Content-Type': 'image/jpg' })
-  await minioClient.fPutObject(config.assets.bucket, thumbFileSmall, thumbPathSmall, { 'Content-Type': 'image/jpg' })
-  await minioClient.fPutObject(config.assets.bucket, thumbFileMedium, thumbPathMedium, { 'Content-Type': 'image/jpg' })
+  await minioClient.fPutObject(config.assets.bucket, thumbFile, thumbPath, { 'Content-Type': 'image/jpeg' })
+  await minioClient.fPutObject(config.assets.bucket, thumbFileSmall, thumbPathSmall, { 'Content-Type': 'image/jpeg' })
+  await minioClient.fPutObject(config.assets.bucket, thumbFileMedium, thumbPathMedium, { 'Content-Type': 'image/jpeg' })
 
   await fs.remove(tmpDir)
 
