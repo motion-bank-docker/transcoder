@@ -38,9 +38,12 @@ class Metadata extends TinyEmitter {
         source = req.query.url
       }
       else {
-        const result = await _this._annotations.getHandler(req)
-        annotation = result.data
-        source = annotation.body.source.id
+        try {
+          const result = await _this._annotations.getHandler(req)
+          annotation = result.data
+          source = annotation.body.source.id
+        }
+        catch (e) { /* ignored */ }
       }
       if (!source) return _this._errorResponse(res, 404)
       const key = `metadata_${ObjectUtil.slug(source)}`
