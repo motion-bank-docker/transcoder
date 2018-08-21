@@ -13,7 +13,7 @@ class Timecodes extends TinyEmitter {
     super()
 
     this._queue = new Queue('timecode', config.timecode.redisURL)
-    this._queue.process(parseInt(config.timecode.concurrency), path.join(__dirname, 'workers', 'extract-ltc.js'))
+    this._queue.process(parseInt(config.timecode.concurrency), require('./workers/extract-ltc'))
 
     this._minio = new Minio.Client(config.assets.client)
 
@@ -49,6 +49,7 @@ class Timecodes extends TinyEmitter {
         source: job.data.source,
         result: job.returnvalue,
         failed: typeof job.failedReason !== 'undefined',
+        failedReason: job.failedReason,
         attempts: job.attemptsMade,
         progress: job.progress,
         delay: job.delay,
