@@ -7,7 +7,7 @@ const
   { ObjectUtil } = require('mbjs-utils')
 
 class Sequences extends TinyEmitter {
-  constructor (app, annotationsService, mapsService) {
+  constructor (api, annotationsService, mapsService) {
     super()
 
     const _this = this
@@ -18,7 +18,7 @@ class Sequences extends TinyEmitter {
     this._queue = new Queue('sequences', config.sequences.redisURL)
     this._queue.process(parseInt(config.sequences.concurrency), require('./workers/concat'))
 
-    app.post('/sequences', async (req, res) => {
+    api.app.post('/sequences', async (req, res) => {
       let result = await _this._maps.getHandler({
         params: {
           id: req.body.id
@@ -43,7 +43,7 @@ class Sequences extends TinyEmitter {
       _this._response(req, res, { jobId })
     })
 
-    app.get('/sequences/:id', async (req, res) => {
+    api.app.get('/sequences/:id', async (req, res) => {
       const job = await _this._queue.getJob(req.params.id)
       if (!job) return _this._errorResponse(res, 404)
       const jobInfo = {

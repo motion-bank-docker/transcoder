@@ -19,12 +19,12 @@ const fetchMetaData = async (annotation, user, annotationsService) => {
       return results.data
     }, config.apiKeys)
   }
-  catch (e) { console.error('fetchMetaData', e.message) }
+  catch (e) { api.captureException(e) }
   return meta
 }
 
 class Metadata extends TinyEmitter {
-  constructor (app, annotationsService) {
+  constructor (api, annotationsService) {
     super()
 
     this._annotations = annotationsService
@@ -32,7 +32,7 @@ class Metadata extends TinyEmitter {
 
     const _this = this
 
-    app.get('/metadata/:id', async (req, res) => {
+    api.app.get('/metadata/:id', async (req, res) => {
       let source, annotation
       if (req.params.id === 'url') {
         source = req.query.url
@@ -43,7 +43,7 @@ class Metadata extends TinyEmitter {
           annotation = result.data
           source = annotation.body.source.id
         }
-        catch (e) { /* ignored */ }
+        catch (e) { api.captureException(e) }
       }
       if (!source) return _this._errorResponse(res, 404)
       const key = `metadata_${ObjectUtil.slug(source)}`
@@ -51,7 +51,7 @@ class Metadata extends TinyEmitter {
       if (_this._memcached) {
         metadata = await new Promise((resolve, reject) => {
           _this._memcached.get(key, function (err, data) {
-            if (err) console.error('failed to get metadata from cache', err.message)
+            if (err) api.captureException(err)
             resolve(data)
           })
         })
@@ -61,7 +61,7 @@ class Metadata extends TinyEmitter {
         if (_this._memcached && metadata) {
           await new Promise((resolve, reject) => {
             _this._memcached.set(key, metadata, parseInt(config.metadata.lifetime.toString()), err => {
-              if (err) console.error('failed to store metadata in cache', err.message)
+              if (err) api.captureException(err)
               resolve()
             })
           })

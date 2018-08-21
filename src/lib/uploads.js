@@ -9,13 +9,13 @@ const
   TinyEmitter = require('tiny-emitter')
 
 class Uploads extends TinyEmitter {
-  constructor (app) {
+  constructor (api) {
     super()
 
     const _this = this
     const upload = multer({ dest: os.tmpdir() })
 
-    app.post('/uploads', async (req, res) => {
+    api.app.post('/uploads', async (req, res) => {
       upload.single('file')(req, res, async () => {
         const extname = path.extname(req.file.originalname)
         const filename = `${ObjectUtil.uuid4()}${extname.toLowerCase()}`
@@ -33,7 +33,7 @@ class Uploads extends TinyEmitter {
       })
     })
 
-    app.delete('/uploads/:file', async (req, res) => {
+    api.app.delete('/uploads/:file', async (req, res) => {
       const minioClient = new Minio.Client(config.assets.client)
       await minioClient.removeObject(config.assets.bucket, req.params.file)
       _this._response(req, res)

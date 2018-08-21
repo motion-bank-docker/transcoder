@@ -8,7 +8,7 @@ const
   { ObjectUtil } = require('mbjs-utils')
 
 class Timecodes extends TinyEmitter {
-  constructor (app) {
+  constructor (api) {
     super()
 
     this._queue = new Queue('timecode', config.timecode.redisURL)
@@ -18,14 +18,14 @@ class Timecodes extends TinyEmitter {
 
     const _this = this
 
-    app.post('/timecodes', async (req, res) => {
+    api.app.post('/timecodes', async (req, res) => {
       const jobId = ObjectUtil.uuid4()
       req.body.uuid = ObjectUtil.uuid4()
       _this._queue.add(req.body, { jobId })
       _this._response(req, res, { jobId })
     })
 
-    app.get('/timecodes/signals/ltc', async (req, res) => {
+    api.app.get('/timecodes/signals/ltc', async (req, res) => {
       const files = []
       const stream = await this._minio.listObjects('ltc', 'LTC')
       stream.on('data', obj => files.push(obj.name))
@@ -40,7 +40,7 @@ class Timecodes extends TinyEmitter {
       })
     })
 
-    app.get('/timecodes/:id', async (req, res) => {
+    api.app.get('/timecodes/:id', async (req, res) => {
       const job = await _this._queue.getJob(req.params.id)
       if (!job) return _this._errorResponse(res, 404)
       const jobInfo = {

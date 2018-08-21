@@ -8,7 +8,7 @@ const
   { ObjectUtil } = require('mbjs-utils')
 
 class Metadata extends TinyEmitter {
-  constructor (app) {
+  constructor (api) {
     super()
 
     const _this = this
@@ -16,14 +16,14 @@ class Metadata extends TinyEmitter {
     this._queue = new Queue('conversions', config.conversions.redisURL)
     this._queue.process(parseInt(config.conversions.concurrency), require('./workers/convert'))
 
-    app.post('/conversions', async (req, res) => {
+    api.app.post('/conversions', async (req, res) => {
       const jobId = ObjectUtil.uuid4()
       req.body.uuid = ObjectUtil.uuid4()
       _this._queue.add(req.body, { jobId })
       _this._response(req, res, { jobId })
     })
 
-    app.get('/conversions/:id', async (req, res) => {
+    api.app.get('/conversions/:id', async (req, res) => {
       const job = await _this._queue.getJob(req.params.id)
       if (!job) return _this._errorResponse(res, 404)
       const jobInfo = {

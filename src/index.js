@@ -11,10 +11,10 @@ const setup = async function () {
     models = require('mbjs-data-models'),
     Service = require('./lib/service')
 
-  const annotations = new Service('annotations', api._app, models.Annotation, api._logger, api._acl)
+  const annotations = new Service('annotations', api, models.Annotation)
   // annotations.on('message', message => api._sockets.write(message))
 
-  const maps = new Service('maps', api._app, models.Map, api._logger, api._acl)
+  const maps = new Service('maps', api, models.Map)
   // annotations.on('message', message => api._sockets.write(message))
 
   /**
@@ -22,42 +22,42 @@ const setup = async function () {
    */
   const
     Metadata = require('./lib/metadata'),
-    metadata = new Metadata(api._app, annotations)
+    metadata = new Metadata(api, annotations)
 
   /**
    * Configure upload
    */
   const
     Uploads = require('./lib/uploads'),
-    uploads = new Uploads(api._app)
+    uploads = new Uploads(api)
 
   /**
    * Configure download
    */
   const
     Downloads = require('./lib/downloads'),
-    downloads = new Downloads(api._app)
+    downloads = new Downloads(api)
 
   /**
    * Configure conversion
    */
   const
     Conversions = require('./lib/conversions'),
-    conversions = new Conversions(api._app)
+    conversions = new Conversions(api)
 
   /**
    * Configure sequences
    */
   const
     Sequences = require('./lib/sequences'),
-    sequences = new Sequences(api._app, annotations, maps)
+    sequences = new Sequences(api, annotations, maps)
 
   /**
    * Configure timecode
    */
   const
     Timecodes = require('./lib/timecodes'),
-    timecodes = new Timecodes(api._app)
+    timecodes = new Timecodes(api)
 
   await api.start()
 }

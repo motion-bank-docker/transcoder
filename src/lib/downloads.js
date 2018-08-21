@@ -4,13 +4,13 @@ const
   TinyEmitter = require('tiny-emitter')
 
 class Downloads extends TinyEmitter {
-  constructor (app) {
+  constructor (api) {
     super()
 
     const _this = this
     this.minioClient = new Minio.Client(config.assets.client)
 
-    app.get('/downloads/:file', async (req, res) => {
+    api.app.get('/downloads/:file', async (req, res) => {
       const stream = await _this.minioClient.getObject(config.assets.bucket, req.params.file)
       res.setHeader('Content-Type', 'application/force-download')
       stream.pipe(res)
