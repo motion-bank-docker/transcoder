@@ -6,7 +6,7 @@ const
   { ObjectUtil } = require('mbjs-utils'),
   getMetaData = require('mbjs-media/src/util/get-metadata')
 
-const fetchMetaData = async (annotation, user, annotationsService) => {
+const fetchMetaData = async (annotation, user, annotationsService, api) => {
   let meta
   try {
     meta = await getMetaData(annotation, async query => {
@@ -57,7 +57,7 @@ class Metadata extends TinyEmitter {
         })
       }
       if (!metadata) {
-        metadata = await fetchMetaData(annotation || source, req.user, _this._annotations)
+        metadata = await fetchMetaData(annotation || source, req.user, _this._annotations, api)
         if (_this._memcached && metadata) {
           await new Promise((resolve, reject) => {
             _this._memcached.set(key, metadata, parseInt(config.metadata.lifetime.toString()), err => {
