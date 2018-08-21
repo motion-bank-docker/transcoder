@@ -1,7 +1,6 @@
 const
   config = require('config'),
   send = require('@polka/send-type'),
-  path = require('path'),
   TinyEmitter = require('tiny-emitter'),
   Queue = require('bull'),
   { DateTime } = require('luxon'),

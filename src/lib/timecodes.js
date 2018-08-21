@@ -3,7 +3,6 @@ const
   send = require('@polka/send-type'),
   TinyEmitter = require('tiny-emitter'),
   Queue = require('bull'),
-  path = require('path'),
   Minio = require('minio'),
   { DateTime } = require('luxon'),
   { ObjectUtil } = require('mbjs-utils')
