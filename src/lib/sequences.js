@@ -19,26 +19,28 @@ class Sequences extends TinyEmitter {
     this._queue.process(parseInt(config.sequences.concurrency), require('./workers/concat'))
 
     api.app.post('/sequences', async (req, res) => {
-      let result = await _this._maps.getHandler({
-        params: {
-          id: req.body.id
-        },
-        user: req.user
-      })
-      const map = result.data
-      if (!map) return _this._errorResponse(res, 404)
-      result = await _this._annotations.findHandler({
-        query: { query: JSON.stringify({ 'target.id': `${config.api.uriBase}/piecemaker/timelines/${map.uuid}` }) },
-        user: req.user
-      })
-      if (!result.data.items.length) return _this._errorResponse(res, 404)
-      const jobId = ObjectUtil.uuid4()
+      if (req.body.id) {
+        let result = await _this._maps.getHandler({
+          params: {
+            id: req.body.id
+          },
+          user: req.user
+        })
+        const map = result.data
+        if (!map) return _this._errorResponse(res, 404)
+        result = await _this._annotations.findHandler({
+          query: {query: JSON.stringify({'target.id': `${config.api.uriBase}/piecemaker/timelines/${map.uuid}`})},
+          user: req.user
+        })
+        if (!result.data.items.length) return _this._errorResponse(res, 404)
+        req.body.map = map
+        req.body.sources = result.data.items.filter(item => {
+          return item.body.source.type === 'video/mp4'
+        })
+      }
       req.body.uuid = ObjectUtil.uuid4()
-      req.body.map = map
-      req.body.sources = result.data.items.filter(item => {
-        return item.body.source.type === 'video/mp4'
-      })
-      if (!req.body.sources) return _this._errorResponse(res, 404)
+      const jobId = ObjectUtil.uuid4()
+      if (!req.body.sources && !req.body.map) return _this._errorResponse(res, 404)
       _this._queue.add(req.body, { jobId })
       _this._response(req, res, { jobId })
     })
