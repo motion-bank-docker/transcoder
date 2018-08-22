@@ -28,20 +28,27 @@ const concatJob = async function (job) {
   } catch (e) {
     console.error(e.message)
   }
+
   await ffmpegThumb(destination, tmpDir, 1, progress => {
-    job.progress(40 + progress.percent * 0.4)
+    job.progress(60 + progress.percent * 0.3)
   })
-  const thumbFile = `${baseName}.png`
+  const thumbFile = `${baseName}.jpg`
   const thumbPath = path.join(path.dirname(destination), thumbFile)
-  await fs.move(
-    path.join(tmpDir, 'tn.png'),
-    thumbPath,
-    { overwrite: true }
-  )
+  await image.convert(path.join(tmpDir, 'tn.png'), thumbPath)
+
+  const thumbFileSmall = `${baseName}-s.jpg`
+  const thumbPathSmall = path.join(path.dirname(destination), thumbFileSmall)
+  await image.convert(path.join(tmpDir, 'tn.png'), thumbPathSmall, { resize: { width: 240, height: 240 } })
+
+  const thumbFileMedium = `${baseName}-m.jpg`
+  const thumbPathMedium = path.join(path.dirname(destination), thumbFileMedium)
+  await image.convert(path.join(tmpDir, 'tn.png'), thumbPathMedium, { resize: { width: 640, height: 640 } })
 
   const minioClient = new Minio.Client(config.assets.client)
   await minioClient.fPutObject(config.assets.bucket, destFile, destination, { 'Content-Type': 'video/mp4' })
-  await minioClient.fPutObject(config.assets.bucket, thumbFile, thumbPath, { 'Content-Type': 'image/png' })
+  await minioClient.fPutObject(config.assets.bucket, thumbFile, thumbPath, { 'Content-Type': 'image/jpeg' })
+  await minioClient.fPutObject(config.assets.bucket, thumbFileSmall, thumbPathSmall, { 'Content-Type': 'image/jpeg' })
+  await minioClient.fPutObject(config.assets.bucket, thumbFileMedium, thumbPathMedium, { 'Content-Type': 'image/jpeg' })
 
   await fs.remove(tmpDir)
 
