@@ -14,7 +14,7 @@ const concatJob = async function (job) {
 
   let errored = false
 
-  const uuid = job.data || ObjectUtil.uuid4()
+  const uuid = job.data.uuid || ObjectUtil.uuid4()
   const tmpDir = path.join(os.tmpdir(), uuid)
   const destFile = `${uuid}.mp4`
   const destination = path.join(tmpDir, destFile)
