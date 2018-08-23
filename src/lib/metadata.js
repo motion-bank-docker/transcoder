@@ -41,7 +41,7 @@ class Metadata extends TinyEmitter {
         try {
           const result = await _this._annotations.getHandler(req)
           annotation = result.data
-          source = annotation.body.source.id
+          source = annotation && annotation.body ? annotation.body.source.id : undefined
         }
         catch (e) { api.captureException(e) }
       }
