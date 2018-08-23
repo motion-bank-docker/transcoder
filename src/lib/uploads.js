@@ -28,7 +28,8 @@ class Uploads extends TinyEmitter {
         assetHost += `/${config.assets.bucket}`
 
         _this._response(req, res, {
-          file: `${assetHost}/${filename}`
+          file: `${assetHost}/${filename}`,
+          originalName: req.file.originalname
         })
       })
     })
