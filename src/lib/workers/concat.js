@@ -5,6 +5,7 @@ const
   config = require('config'),
   ffmpegJoin = require('mbjs-media/src/util/ffmpeg-join'),
   ffmpegThumb = require('mbjs-media/src/util/ffmpeg-thumb'),
+  image = require('mbjs-media/src/util/image'),
   Minio = require('minio'),
   { Assert, ObjectUtil } = require('mbjs-utils'),
   { captureException } = require('mbjs-generic-api/src/raven')
