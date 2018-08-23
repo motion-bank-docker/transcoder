@@ -9,10 +9,13 @@ const
   ffmpeg = require('mbjs-media/src/util/ffmpeg'),
   image = require('mbjs-media/src/util/image'),
   Minio = require('minio'),
-  { Assert, ObjectUtil } = require('mbjs-utils')
+  { Assert, ObjectUtil } = require('mbjs-utils'),
+  { captureException } = require('mbjs-generic-api/src/raven')
 
 const convertJob = async function (job) {
   Assert.isType(job.data.source, 'string', 'invalid source')
+
+  let errored = false
 
   const uuid = ObjectUtil.uuid4()
   const tmpDir = path.join(os.tmpdir(), uuid)
@@ -37,8 +40,10 @@ const convertJob = async function (job) {
         job.progress(progress.percent * 0.3)
       })
       source = tmpdst
-    } catch (e) {
-      console.error(e.message)
+    }
+    catch (e) {
+      captureException(e)
+      errored = true
     }
   }
   try {
@@ -52,30 +57,40 @@ const convertJob = async function (job) {
         job.progress(progress.percent * 0.3)
       })
     }
-  } catch (e) {
-    console.error(e.message)
+  }
+  catch (e) {
+    captureException(e)
+    errored = true
   }
 
-  await ffmpegThumb(destination, tmpDir, 1, progress => {
-    job.progress(60 + progress.percent * 0.3)
-  })
-  const thumbFile = `${baseName}.jpg`
-  const thumbPath = path.join(path.dirname(destination), thumbFile)
-  await image.convert(path.join(tmpDir, 'tn.png'), thumbPath)
+  try {
+    await ffmpegThumb(destination, tmpDir, 1, progress => {
+      job.progress(60 + progress.percent * 0.3)
+    })
+    const thumbFile = `${baseName}.jpg`
+    const thumbPath = path.join(path.dirname(destination), thumbFile)
+    await image.convert(path.join(tmpDir, 'tn.png'), thumbPath)
 
-  const thumbFileSmall = `${baseName}-s.jpg`
-  const thumbPathSmall = path.join(path.dirname(destination), thumbFileSmall)
-  await image.convert(path.join(tmpDir, 'tn.png'), thumbPathSmall, { resize: { width: 240, height: 240 } })
+    const thumbFileSmall = `${baseName}-s.jpg`
+    const thumbPathSmall = path.join(path.dirname(destination), thumbFileSmall)
+    await image.convert(path.join(tmpDir, 'tn.png'), thumbPathSmall, {resize: {width: 240, height: 240}})
 
-  const thumbFileMedium = `${baseName}-m.jpg`
-  const thumbPathMedium = path.join(path.dirname(destination), thumbFileMedium)
-  await image.convert(path.join(tmpDir, 'tn.png'), thumbPathMedium, { resize: { width: 640, height: 640 } })
+    const thumbFileMedium = `${baseName}-m.jpg`
+    const thumbPathMedium = path.join(path.dirname(destination), thumbFileMedium)
+    await image.convert(path.join(tmpDir, 'tn.png'), thumbPathMedium, {resize: {width: 640, height: 640}})
+  }
+  catch (e) {
+    captureException(e)
+    errored = true
+  }
 
-  const minioClient = new Minio.Client(config.assets.client)
-  await minioClient.fPutObject(config.assets.bucket, destFile, destination, { 'Content-Type': 'video/mp4' })
-  await minioClient.fPutObject(config.assets.bucket, thumbFile, thumbPath, { 'Content-Type': 'image/jpeg' })
-  await minioClient.fPutObject(config.assets.bucket, thumbFileSmall, thumbPathSmall, { 'Content-Type': 'image/jpeg' })
-  await minioClient.fPutObject(config.assets.bucket, thumbFileMedium, thumbPathMedium, { 'Content-Type': 'image/jpeg' })
+  if (!errored) {
+    const minioClient = new Minio.Client(config.assets.client)
+    await minioClient.fPutObject(config.assets.bucket, destFile, destination, {'Content-Type': 'video/mp4'})
+    await minioClient.fPutObject(config.assets.bucket, thumbFile, thumbPath, {'Content-Type': 'image/jpeg'})
+    await minioClient.fPutObject(config.assets.bucket, thumbFileSmall, thumbPathSmall, {'Content-Type': 'image/jpeg'})
+    await minioClient.fPutObject(config.assets.bucket, thumbFileMedium, thumbPathMedium, {'Content-Type': 'image/jpeg'})
+  }
 
   await fs.remove(tmpDir)
 
@@ -85,6 +100,7 @@ const convertJob = async function (job) {
   if (config.assets.client.port !== 80 && config.assets.client.port !== 443) assetHost += `:${config.assets.client.port}`
   assetHost += `/${config.assets.bucket}`
 
+  if (errored) return
   return {
     video: `${assetHost}/${destFile}`,
     preview: `${assetHost}/${thumbFile}`
