@@ -63,20 +63,21 @@ const convertJob = async function (job) {
     errored = true
   }
 
+  const thumbFile = `${baseName}.jpg`
+  const thumbPath = path.join(path.dirname(destination), thumbFile)
+
+  const thumbFileSmall = `${baseName}-s.jpg`
+  const thumbPathSmall = path.join(path.dirname(destination), thumbFileSmall)
+
+  const thumbFileMedium = `${baseName}-m.jpg`
+  const thumbPathMedium = path.join(path.dirname(destination), thumbFileMedium)
+
   try {
     await ffmpegThumb(destination, tmpDir, 1, progress => {
       job.progress(60 + progress.percent * 0.3)
     })
-    const thumbFile = `${baseName}.jpg`
-    const thumbPath = path.join(path.dirname(destination), thumbFile)
     await image.convert(path.join(tmpDir, 'tn.png'), thumbPath)
-
-    const thumbFileSmall = `${baseName}-s.jpg`
-    const thumbPathSmall = path.join(path.dirname(destination), thumbFileSmall)
     await image.convert(path.join(tmpDir, 'tn.png'), thumbPathSmall, {resize: {width: 240, height: 240}})
-
-    const thumbFileMedium = `${baseName}-m.jpg`
-    const thumbPathMedium = path.join(path.dirname(destination), thumbFileMedium)
     await image.convert(path.join(tmpDir, 'tn.png'), thumbPathMedium, {resize: {width: 640, height: 640}})
   }
   catch (e) {
