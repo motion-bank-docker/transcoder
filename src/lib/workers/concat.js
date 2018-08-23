@@ -57,11 +57,17 @@ const concatJob = async function (job) {
   }
 
   if (!errored) {
-    const minioClient = new Minio.Client(config.assets.client)
-    await minioClient.fPutObject(config.assets.bucket, destFile, destination, {'Content-Type': 'video/mp4'})
-    await minioClient.fPutObject(config.assets.bucket, thumbFile, thumbPath, {'Content-Type': 'image/jpeg'})
-    await minioClient.fPutObject(config.assets.bucket, thumbFileSmall, thumbPathSmall, {'Content-Type': 'image/jpeg'})
-    await minioClient.fPutObject(config.assets.bucket, thumbFileMedium, thumbPathMedium, {'Content-Type': 'image/jpeg'})
+    try {
+      const minioClient = new Minio.Client(config.assets.client)
+      await minioClient.fPutObject(config.assets.bucket, destFile, destination, {'Content-Type': 'video/mp4'})
+      await minioClient.fPutObject(config.assets.bucket, thumbFile, thumbPath, {'Content-Type': 'image/jpeg'})
+      await minioClient.fPutObject(config.assets.bucket, thumbFileSmall, thumbPathSmall, {'Content-Type': 'image/jpeg'})
+      await minioClient.fPutObject(config.assets.bucket, thumbFileMedium, thumbPathMedium, {'Content-Type': 'image/jpeg'})
+    }
+    catch (e) {
+      captureException(e)
+      errored = true
+    }
   }
 
   await fs.remove(tmpDir)
