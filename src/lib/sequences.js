@@ -38,7 +38,6 @@ class Sequences extends TinyEmitter {
           return item.body.source.type === 'video/mp4'
         })
       }
-      req.body.uuid = ObjectUtil.uuid4()
       const jobId = ObjectUtil.uuid4()
       if (!req.body.sources && !req.body.map) return _this._errorResponse(res, 404)
       _this._queue.add(req.body, { jobId })

@@ -18,7 +18,6 @@ class Metadata extends TinyEmitter {
 
     api.app.post('/conversions', async (req, res) => {
       const jobId = ObjectUtil.uuid4()
-      req.body.uuid = ObjectUtil.uuid4()
       _this._queue.add(req.body, { jobId })
       _this._response(req, res, { jobId })
     })
