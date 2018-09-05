@@ -55,7 +55,7 @@
     },
     "jwt": {
       "audience": "https://api.motionbank.org",
-      "issuer": "https://motionbank.eu.auth0.com/",
+      "issuer": "https://auth.motionbank.org/",
       "algorithms": ["RS256"],
       "credentialsRequired": false
     }

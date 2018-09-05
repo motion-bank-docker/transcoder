@@ -44,7 +44,7 @@
     },
     "jwt": {
       "audience": "http://localhost:3030",
-      "issuer": "https://motionbank.eu.auth0.com/",
+      "issuer": "https://auth.motionbank.org/",
       "algorithms": ["RS256"],
       "credentialsRequired": false
     }
