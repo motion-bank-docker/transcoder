@@ -82,6 +82,7 @@ const concatJob = async function (job) {
   let secure = config.assets.client.secure && (config.assets.client.secure === true || config.assets.client.secure === 'true')
   let assetHost = `${secure ? 'https://' : 'http://'}${config.assets.client.endPoint}`
   if (port !== 80 && port !== 443) assetHost += `:${port}`
+  assetHost = config.assets.host || assetHost
   assetHost += `/${config.assets.bucket}`
 
   if (errored) return

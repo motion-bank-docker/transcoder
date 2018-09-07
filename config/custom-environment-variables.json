@@ -1,5 +1,6 @@
 {
   "assets": {
+    "host": "ASSETS_HOST",
     "client": {
       "endPoint": "ASSETS_ENDPOINT",
       "port": "ASSETS_PORT",
@@ -40,5 +41,10 @@
   "apiKeys": {
     "youtube": "YOUTUBE_API_KEY",
     "vimeo": "VIMEO_ACCESS_TOKEN"
+  },
+  "auth": {
+    "jwt": {
+      "audience": "AUTH0_AUDIENCE"
+    }
   }
 }

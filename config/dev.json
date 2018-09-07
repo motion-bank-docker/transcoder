@@ -19,6 +19,17 @@
       "dbName": "motionbank-api-acl-dev"
     }
   },
+  "assets": {
+    "host": null,
+    "client": {
+      "endPoint": "assets.motionbank.org",
+      "port": 443,
+      "secure": true,
+      "accessKey": null,
+      "secretKey": null
+    },
+    "bucket": "piecemaker"
+  },
   "conversions": {
     "concurrency": 1,
     "redisURL": "redis://localhost:6379"

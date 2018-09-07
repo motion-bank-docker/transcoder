@@ -11,7 +11,7 @@ class Downloads extends TinyEmitter {
     const opts = Object.assign({}, config.assets.client)
     opts.secure = config.assets.client.secure && (config.assets.client.secure === true || config.assets.client.secure === 'true')
     opts.port = config.assets.client.port ? parseInt(config.assets.client.port) : undefined
-    const minioClient = new Minio.Client(opts)
+    _this.minioClient = new Minio.Client(opts)
 
     api.app.get('/downloads/:file', async (req, res) => {
       const stream = await _this.minioClient.getObject(config.assets.bucket, req.params.file)
