@@ -14,7 +14,10 @@ class Timecodes extends TinyEmitter {
     this._queue = new Queue('timecode', config.timecode.redisURL)
     this._queue.process(parseInt(config.timecode.concurrency), require('./workers/extract-ltc'))
 
-    this._minio = new Minio.Client(config.assets.client)
+    const opts = Object.assign({}, config.assets.client)
+    opts.secure = config.assets.client.secure && (config.assets.client.secure === true || config.assets.client.secure === 'true')
+    opts.port = config.assets.client.port ? parseInt(config.assets.client.port) : undefined
+    this._minio = new Minio.Client(opts)
 
     const _this = this
 
@@ -30,8 +33,10 @@ class Timecodes extends TinyEmitter {
       stream.on('data', obj => files.push(obj.name))
       stream.on('error', err => _this._errorResponse(res, 500, err.message))
       stream.on('end', () => {
-        let assetHost = `${config.assets.client.secure ? 'https://' : 'http://'}${config.assets.client.endPoint}`
-        if (config.assets.client.port !== 80 && config.assets.client.port !== 443) assetHost += `:${config.assets.client.port}`
+        let port = config.assets.client.port ? parseInt(config.assets.client.port) : undefined
+        let secure = config.assets.client.secure && (config.assets.client.secure === true || config.assets.client.secure === 'true')
+        let assetHost = `${secure ? 'https://' : 'http://'}${config.assets.client.endPoint}`
+        if (port !== 80 && port !== 443) assetHost += `:${port}`
         assetHost += '/ltc'
         _this._response(req, res, files.map(file => {
           return `${assetHost}/${file}`

@@ -59,7 +59,10 @@ const concatJob = async function (job) {
 
   if (!errored) {
     try {
-      const minioClient = new Minio.Client(config.assets.client)
+      const opts = Object.assign({}, config.assets.client)
+      opts.secure = config.assets.client.secure && (config.assets.client.secure === true || config.assets.client.secure === 'true')
+      opts.port = config.assets.client.port ? parseInt(config.assets.client.port) : undefined
+      const minioClient = new Minio.Client(opts)
       await minioClient.fPutObject(config.assets.bucket, destFile, destination, {'Content-Type': 'video/mp4'})
       await minioClient.fPutObject(config.assets.bucket, thumbFile, thumbPath, {'Content-Type': 'image/jpeg'})
       await minioClient.fPutObject(config.assets.bucket, thumbFileSmall, thumbPathSmall, {'Content-Type': 'image/jpeg'})
@@ -75,8 +78,10 @@ const concatJob = async function (job) {
 
   job.progress(100)
 
-  let assetHost = `${config.assets.client.secure ? 'https://' : 'http://'}${config.assets.client.endPoint}`
-  if (config.assets.client.port !== 80 && config.assets.client.port !== 443) assetHost += `:${config.assets.client.port}`
+  let port = config.assets.client.port ? parseInt(config.assets.client.port) : undefined
+  let secure = config.assets.client.secure && (config.assets.client.secure === true || config.assets.client.secure === 'true')
+  let assetHost = `${secure ? 'https://' : 'http://'}${config.assets.client.endPoint}`
+  if (port !== 80 && port !== 443) assetHost += `:${port}`
   assetHost += `/${config.assets.bucket}`
 
   if (errored) return

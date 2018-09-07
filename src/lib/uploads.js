@@ -19,12 +19,17 @@ class Uploads extends TinyEmitter {
       upload.single('file')(req, res, async () => {
         const extname = path.extname(req.file.originalname)
         const filename = `${ObjectUtil.uuid4()}${extname.toLowerCase()}`
-        const minioClient = new Minio.Client(config.assets.client)
+        const opts = Object.assign({}, config.assets.client)
+        opts.secure = config.assets.client.secure && (config.assets.client.secure === true || config.assets.client.secure === 'true')
+        opts.port = config.assets.client.port ? parseInt(config.assets.client.port) : undefined
+        const minioClient = new Minio.Client(opts)
 
         await minioClient.fPutObject(config.assets.bucket, filename, req.file.path, { 'Content-Type': req.file.mimetype })
 
-        let assetHost = `${config.assets.client.secure ? 'https://' : 'http://'}${config.assets.client.endPoint}`
-        if (config.assets.client.port !== 80 && config.assets.client.port !== 443) assetHost += `:${config.assets.client.port}`
+        let port = config.assets.client.port ? parseInt(config.assets.client.port) : undefined
+        let secure = config.assets.client.secure && (config.assets.client.secure === true || config.assets.client.secure === 'true')
+        let assetHost = `${secure ? 'https://' : 'http://'}${config.assets.client.endPoint}`
+        if (port !== 80 && port !== 443) assetHost += `:${port}`
         assetHost += `/${config.assets.bucket}`
 
         _this._response(req, res, {
@@ -35,7 +40,10 @@ class Uploads extends TinyEmitter {
     })
 
     api.app.delete('/uploads/:file', async (req, res) => {
-      const minioClient = new Minio.Client(config.assets.client)
+      const opts = Object.assign({}, config.assets.client)
+      opts.secure = config.assets.client.secure && (config.assets.client.secure === true || config.assets.client.secure === 'true')
+      opts.port = config.assets.client.port ? parseInt(config.assets.client.port) : undefined
+      const minioClient = new Minio.Client(opts)
       await minioClient.removeObject(config.assets.bucket, req.params.file)
       _this._response(req, res)
     })
