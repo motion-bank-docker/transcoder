@@ -43,6 +43,9 @@
     "concurrency": 1,
     "redisURL": "redis://localhost:6379"
   },
+  "memcached": {
+    "url": null
+  },
   "metadata": {
     "memcachedURL": null,
     "lifetime": 86400
