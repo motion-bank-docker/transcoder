@@ -13,6 +13,7 @@ class Service extends TinyEmitter {
 
     this._name = name
     this._acl = api.acl
+    this._api = api
     this._logger = api.logger
     this._Model = model
     // TODO: make db adapter configurable (nedb, etc.)
@@ -39,7 +40,7 @@ class Service extends TinyEmitter {
           allowed = await this._acl.areAnyRolesAllowed(roles, entry.uuid, ['get'])
         }
         catch (err) {
-          api.captureException(err)
+          this._api.captureException(err)
         }
       }
       if (allowed) items.push(entry)
@@ -56,10 +57,10 @@ class Service extends TinyEmitter {
       if (result.author && result.author.id === user) allowed = true
       else {
         try {
-          allowed = await this._acl.areAnyRolesAllowed(roles, entry.uuid, ['get'])
+          allowed = await this._acl.areAnyRolesAllowed(roles, result.uuid, ['get'])
         }
         catch (err) {
-          api.captureException(err)
+          this._api.captureException(err)
         }
       }
       if (allowed) {
