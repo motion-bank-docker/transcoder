@@ -56,9 +56,9 @@ class Metadata extends TinyEmitter {
           })
         })
       }
-      if (!metadata) {
+      if (!metadata || !Object.keys(metadata).length) {
         metadata = await fetchMetaData(annotation || source, req.user, _this._annotations, api)
-        if (_this._memcached && metadata) {
+        if (_this._memcached && metadata && Object.keys(metadata) > 0) {
           await new Promise((resolve, reject) => {
             _this._memcached.set(key, metadata, parseInt(config.metadata.lifetime.toString()), err => {
               if (err) api.captureException(err)
@@ -67,7 +67,7 @@ class Metadata extends TinyEmitter {
           })
         }
       }
-      if (!metadata) return _this._errorResponse(res, 404)
+      if (!metadata || !Object.keys(metadata).length) return _this._errorResponse(res, 404)
       _this._response(req, res, metadata)
     })
   }
