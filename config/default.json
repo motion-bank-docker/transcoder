@@ -45,7 +45,8 @@
     "redisURL": "redis://localhost:6379"
   },
   "memcached": {
-    "url": null
+    "url": null,
+    "lifetime": 86400
   },
   "metadata": {
     "memcachedURL": null,
