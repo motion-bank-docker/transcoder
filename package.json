@@ -39,7 +39,7 @@
     "fs-extra": "^7.0.0",
     "luxon": "^1.3.3",
     "mbjs-data-models": "0.0.8",
-    "mbjs-generic-api": "0.0.16",
+    "mbjs-generic-api": "0.0.19",
     "mbjs-media": "0.0.29",
     "mbjs-persistence": "^0.2.0",
     "mbjs-utils": "0.0.6",
