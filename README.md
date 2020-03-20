@@ -16,6 +16,6 @@ The docker image can be pulled with the tag `motionbank/transcoder:latest`.
 
 ## License
 
-:copyright: 2018 Mainz University of Applied Sciences (Motion Bank Project) – 
+:copyright: 2020 Mainz University of Applied Sciences (Motion Bank Project) – 
 Released under the [MIT](https://github.com/motionbank-js/transcoder/blob/master/LICENSE) license
 
