@@ -1,0 +1,4 @@
+node_modules
+.readme
+Dockerfile
+*.md
