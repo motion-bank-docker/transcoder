@@ -7,7 +7,6 @@ aliases:
       npm i -g npm
       node --version
       npm --version
-      npm i -g @quasar/cli
       npm install
 
 version: 2
